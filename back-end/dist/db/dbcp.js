@@ -12,19 +12,19 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.router = void 0;
-const express_1 = __importDefault(require("express"));
-const dbcp_1 = require("../db/dbcp");
-exports.router = express_1.default.Router();
-function test() {
+const promise_mysql_1 = __importDefault(require("promise-mysql"));
+const dotenv_1 = __importDefault(require("dotenv"));
+dotenv_1.default.config();
+let datasource;
+(function initPool() {
     return __awaiter(this, void 0, void 0, function* () {
-        console.log(yield dbcp_1.datasource.getConnection());
+        datasource = yield promise_mysql_1.default.createPool({
+            host: process.env.DB_HOST,
+            port: process.env.DB_PORT,
+            user: process.env.DB_USER,
+            password: process.env.DB_PASSWORD,
+            database: process.env.DB_NAME,
+            connectionLimit: process.env.DB_SIZE
+        });
     });
-}
-await dbcp_1.datasource.getConnection();
-exports.router.delete('/:isbn', (req, res) => {
-    res.send("<h1>Hello delete</h1>");
-});
-exports.router.patch('/:isbn', (req, res) => {
-    res.send("<h1>Hello patch</h1>");
-});
+})();
